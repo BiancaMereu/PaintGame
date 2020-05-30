@@ -17,6 +17,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,6 +33,9 @@ public class CreateAccountMain extends AppCompatActivity {
     ProgressBar progressBar;
     FirebaseAuth fAuth;
     TextView mText;
+    String name;
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,6 +51,8 @@ public class CreateAccountMain extends AppCompatActivity {
 
         fAuth = FirebaseAuth.getInstance();
         progressBar = findViewById(R.id.progressBar);
+
+
 
 //        if (fAuth.getCurrentUser() != null) {
 //            startActivity(new Intent(getApplicationContext(), GameActivity.class));
@@ -72,6 +82,19 @@ public class CreateAccountMain extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
                             Toast.makeText(CreateAccountMain.this, "User Created.", Toast.LENGTH_SHORT).show();
+
+                            String user_id = fAuth.getCurrentUser().getUid();
+
+                            DatabaseReference current_user = FirebaseDatabase.getInstance().getReference().child("Users").child(user_id);
+
+                            name = mUserName.getText().toString();
+
+                            Map newPost = new HashMap();
+                            newPost.put("name", name);
+
+                            current_user.setValue(newPost);
+
+
                             startActivity(new Intent(getApplicationContext(), GameActivity.class));
                         }
                         else{
